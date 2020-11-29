@@ -25,9 +25,18 @@ private slots:
 
     void on_CancelButton_clicked();
 
+    void on_comboBox_backcolor_currentIndexChanged(const QString &arg1);
+
+    void on_comboBox_barcolor_currentIndexChanged(const QString &arg1);
+
+    void on_pushButton_clicked();
+
 private:
     Ui::CreatePlot *ui;
     Plot plot;
+    QLinearGradient gradient;
+    QCPBars *bar;
+    QCustomPlot *f;
 };
 
 #endif // CREATEPLOT_H
