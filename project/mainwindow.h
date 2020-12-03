@@ -24,9 +24,32 @@ private slots:
 
     void on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
+    void rebuild(Plot p);
+
+    void on_spinBox_cur_tick_valueChanged(int arg1);
+
+    void on_comboBox_cur_bar_currentIndexChanged(int index);
+
+    void on_doubleSpinBox_cur_data_valueChanged(double arg1);
+
+    void on_pushButton_Delete_clicked();
+
 private:
     Ui::MainWindow *ui;
     CreatePlot *crpl;
     QVector<Plot> plots;
+    QLinearGradient gradient;
+    QVector<QCPBars*> bars;
+    QCPBarsGroup *group;
+    QVector<double> ticks;
+    int num;
+    QVector<QColor> col_bars;
+    QVector<QString> name_bars;
+    QString x_name;
+    QString y_name;
+    bool main_x;
+    bool legend;
+    QColor background;
+    int cur;
 };
 #endif // MAINWINDOW_H

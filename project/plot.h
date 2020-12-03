@@ -6,29 +6,48 @@
 class Plot
 {
 private:
-    QLinearGradient _gradient;
-    QCPBars * _bar;
-    QCPAxis * _xAxis;
-    QCPAxis * _yAxis;
-    QVector<double> _data;
     QString _name;
+    QColor _background;
+    int _num;
+    QVector<QColor> _color_bars;
+    QVector<QString> _name_bars;
+    QString _xAxis;
+    QString _yAxis;
+    bool _main_x;
+    bool _legend;
     QListWidgetItem *_listWidgetItem;
+    QVector<QVector<double>> _data;
+    QVector<double> _ticker;
+    int _last;
 public:
     Plot();
-    QLinearGradient gradient() const;
-    void setGradient(const QLinearGradient &gradient);
-    QCPBars *bar() const;
-    void setBar(QCPBars *bar);
-    QCPAxis *xAxis() const;
-    void setXAxis(QCPAxis *xAxis);
-    QCPAxis *yAxis() const;
-    void setYAxis(QCPAxis *yAxis);
-    QVector<double> data() const;
-    void setData(const QVector<double> &data);
+
     QString name() const;
     void setName(const QString &name);
+    QColor background() const;
+    void setBackground(const QColor &background);
+    int num() const;
+    void setNum(int num);
+    QVector<QColor> color_bars() const;
+    void setColor_bars(const QVector<QColor> &color_bars);
+    QVector<QString> name_bars() const;
+    void setName_bars(const QVector<QString> &name_bars);
+    QString xAxis() const;
+    void setXAxis(const QString &xAxis);
+    QString yAxis() const;
+    void setYAxis(const QString &yAxis);
+    bool main_x() const;
+    void setMain_x(bool main_x);
+    bool legend() const;
+    void setLegend(bool legend);
     QListWidgetItem *listWidgetItem() const;
     void setListWidgetItem(QListWidgetItem *listWidgetItem);
+    QVector<QVector<double> > data() const;
+    void setData(const QVector<QVector<double> > &data);
+    QVector<double> ticker() const;
+    void setTicker(const QVector<double> &ticker);
+    int last() const;
+    void setLast(int last);
 };
 
 #endif // PLOT_H

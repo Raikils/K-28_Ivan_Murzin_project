@@ -15,25 +15,14 @@ CreatePlot::CreatePlot(QWidget *parent) :
     ui->comboBox_barcolor->addItem("red");
     ui->comboBox_barcolor->addItem("green");
     ui->comboBox_barcolor->addItem("blue");
+    ui->comboBox_cur_bar->addItem("1");
     gradient.setColorAt(0, QColor(255, 255, 255));
     gradient.setColorAt(1, QColor(255, 255, 255));
-    ui->customPlot->setBackground(QBrush(gradient));
-
-    f = new QCustomPlot(this);
-    f->setVisible(true);
-    f->setMinimumSize(100, 100);
-
-    bar = new QCPBars(f->xAxis, f->yAxis);
-    bar->setAntialiased(false);
-    bar->setStackingGap(1);
-    bar->setName("name");
-    bar->setWidth(100);
-    bar->setPen(QPen(QColor(111, 9, 176).lighter(170)));
-    bar->setBrush(QColor(255, 0, 0));
-
-    QVector<double> ticks;
-    QVector<QString> labels;
     ticks << 1 << 2 << 3;
+    main_x = true;
+    background = QColor(255, 255, 255);
+
+    QVector<QString> labels;
     labels << "1" << "2" << "3";
     QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
     textTicker->addTicks(ticks, labels);
@@ -49,13 +38,12 @@ CreatePlot::CreatePlot(QWidget *parent) :
     ui->customPlot->xAxis->setTickLabelColor(Qt::white);
     ui->customPlot->xAxis->setLabelColor(Qt::white);
 
-    QVector<double> data;
-    data  << 4 << 3 << 3;
-    bar->setData(ticks, data);
-
-    f->yAxis->setLabel("Power Consumption in\nKilowatts per Capita (2007)");
-
-    bar->setWidth(1);
+    col_bars.push_back(QColor(255, 0, 0));
+    name_bars.push_back("");
+    num = 1;
+    legend = false;
+    group = NULL;
+    rebuild();
 }
 
 CreatePlot::~CreatePlot()
@@ -66,6 +54,15 @@ CreatePlot::~CreatePlot()
 void CreatePlot::on_OkButton_clicked()
 {
     plot.setName(ui->lineEdit_name->text());
+    plot.setBackground(background);
+    plot.setNum(num);
+    plot.setColor_bars(col_bars);
+    plot.setName_bars(name_bars);
+    plot.setXAxis(x_name);
+    plot.setYAxis(y_name);
+    plot.setMain_x(main_x);
+    plot.setLegend(legend);
+    close();
     emit CreateNewPlot(plot);
 }
 
@@ -79,50 +76,181 @@ void CreatePlot::on_comboBox_backcolor_currentIndexChanged(const QString &arg1)
     if (arg1 == "red") {
         gradient.setColorAt(0, QColor(255, 0, 0));
         gradient.setColorAt(1, QColor(255, 0, 0));
+        background = QColor(255, 0, 0);
     }
     if (arg1 == "green") {
         gradient.setColorAt(0, QColor(0, 255, 0));
         gradient.setColorAt(1, QColor(0, 255, 0));
+        background = QColor(0, 255, 0);
     }
     if (arg1 == "blue") {
         gradient.setColorAt(0, QColor(0, 0, 255));
         gradient.setColorAt(1, QColor(0, 0, 255));
+        background = QColor(0, 0, 255);
     }
     if (arg1 == "whiet") {
         gradient.setColorAt(0, QColor(255, 255, 255));
         gradient.setColorAt(1, QColor(255, 255, 255));
+        background = QColor(255, 255, 255);
     }
     ui->customPlot->setBackground(QBrush(gradient));
+    ui->customPlot->replot();
+    ui->customPlot->update();
 }
 
 void CreatePlot::on_comboBox_barcolor_currentIndexChanged(const QString &arg1)
 {
-    /*if (arg1 == "red") {
-        bar->setPen(QPen(QColor(111, 9, 176).lighter(170)));
-        bar->setBrush(QColor(255, 0, 0)); qDebug() << "r";
+    if(bars.size() == 0) return;
+    int i = ui->comboBox_cur_bar->currentIndex();
+    if (arg1 == "red") {
+        bars[i]->setBrush(QColor(255, 0, 0));
+        col_bars[i] = QColor(255, 0, 0);
     }
     if (arg1 == "green") {
-        bar->setPen(QPen(QColor(111, 9, 176).lighter(170)));
-        bar->setBrush(QColor(0, 255, 0)); qDebug() << "g";
+        bars[i]->setBrush(QColor(0, 255, 0));
+        col_bars[i] = QColor(0, 255, 0);
     }
     if (arg1 == "blue") {
-        bar->setPen(QPen(QColor(111, 9, 176).lighter(170)));
-        bar->setBrush(QColor(0, 0, 255)); qDebug() << "b";
-    }*/
+        bars[i]->setBrush(QColor(0, 0, 255));
+        col_bars[i] = QColor(0, 0, 255);
+    }
+    ui->customPlot->replot();
+    ui->customPlot->update();
 }
 
-void CreatePlot::on_pushButton_clicked()
+void CreatePlot::on_spinBox_num_bars_valueChanged(int arg1)
 {
-    /*bar->setKeyAxis(ui->customPlot->yAxis);
-    bar->setValueAxis(ui->customPlot->xAxis);*/
-    //delete f;
-    bar->setWidth(5);
-    bar->setPen(QPen(QColor(238, 244, 66).lighter(170)));
-    bar->setBrush(QColor(238, 244, 66));
-    f->yAxis->setLabel("owatts pe Capita (2007)");
-    gradient.setColorAt(0, QColor(0, 0, 255));
-    gradient.setColorAt(1, QColor(0, 0, 255));
-    f->setBackground(QBrush(gradient));
-    f->replot();
-    f->update();
+    if (bars.size() == 0) return;
+    if (bars.size() == arg1) return;
+    if (bars.size() > arg1) {
+        col_bars.resize(arg1);
+        name_bars.resize(arg1);
+        int i = num;
+        num = arg1;
+        ui->comboBox_cur_bar->setCurrentIndex(0);
+        while (i > arg1) {
+            ui->comboBox_cur_bar->removeItem(i - 1);
+            i--;
+        }
+        rebuild();
+    }
+    else {
+        while (bars.size() < arg1) {
+            if (main_x) bars.push_back(new QCPBars(ui->customPlot->xAxis, ui->customPlot->yAxis));
+            else bars.push_back(new QCPBars(ui->customPlot->yAxis, ui->customPlot->xAxis));
+            bars[bars.size() - 1]->setAntialiased(false);
+            bars[bars.size() - 1]->setStackingGap(1);
+            bars[bars.size() - 1]->setName("");
+            name_bars.push_back("");
+            bars[bars.size() - 1]->setBrush(QColor(0, 255, 0));
+            col_bars.push_back(QColor(0, 255, 0));
+            bars[bars.size() - 1]->setWidth(0.3);
+            QVector<double> data;
+            data << 2 << 5 << 9;
+            bars[bars.size() - 1]->setData(ticks, data);
+            bars[bars.size() - 1]->setBarsGroup(group);
+            ui->comboBox_cur_bar->addItem(QString::number(bars.size()));
+            num++;
+        }
+    }
+    ui->customPlot->replot();
+    ui->customPlot->update();
+}
+
+void CreatePlot::rebuild()
+{
+    ui->customPlot->clearPlottables();
+    bars.clear();
+    if (group != NULL) group->clear();
+    if (group != NULL) delete group;
+    group = new QCPBarsGroup(ui->customPlot);
+    QVector<double> data;
+    data << 2 << 5 << 9;
+    for (int i = 0; i < num; i++) {
+        if (main_x) bars.push_back(new QCPBars(ui->customPlot->xAxis, ui->customPlot->yAxis));
+        else bars.push_back(new QCPBars(ui->customPlot->yAxis, ui->customPlot->xAxis));
+        bars[bars.size() - 1]->setAntialiased(false);
+        bars[bars.size() - 1]->setStackingGap(1);
+        bars[bars.size() - 1]->setName(name_bars[i]);
+        bars[bars.size() - 1]->setBrush(col_bars[i]);
+        bars[bars.size() - 1]->setWidth(0.3);
+        bars[bars.size() - 1]->setData(ticks, data);
+        bars[bars.size() - 1]->setBarsGroup(group);
+    }
+    ui->customPlot->setBackground(QBrush(gradient));
+    ui->customPlot->xAxis->setRange(0, 4);
+    ui->customPlot->yAxis->setRange(0, 10);
+    ui->customPlot->xAxis->setLabel(ui->lineEdit_xAxis->text());
+    ui->customPlot->yAxis->setLabel(ui->lineEdit_yAxis->text());
+    ui->customPlot->legend->setVisible(legend);
+    ui->customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignHCenter);
+    ui->customPlot->legend->setBrush(QColor(255, 255, 255, 100));
+    ui->customPlot->legend->setBorderPen(Qt::NoPen);
+    QFont legendFont = font();
+    legendFont.setPointSize(10);
+    ui->customPlot->legend->setFont(legendFont);
+    ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+}
+
+void CreatePlot::on_lineEdit_xAxis_textChanged(const QString &arg1)
+{
+    ui->customPlot->xAxis->setLabel(arg1);
+    ui->customPlot->replot();
+    ui->customPlot->update();
+}
+
+void CreatePlot::on_radioButton_main_y_clicked()
+{
+    main_x = false;
+    rebuild();
+    ui->customPlot->replot();
+    ui->customPlot->update();
+}
+
+void CreatePlot::on_radioButton_main_x_clicked()
+{
+    main_x = true;
+    rebuild();
+    ui->customPlot->replot();
+    ui->customPlot->update();
+}
+
+void CreatePlot::on_checkBox_above_stateChanged(int arg1)
+{
+
+}
+
+void CreatePlot::on_checkBox_legend_stateChanged(int arg1)
+{
+    if (arg1) legend = true;
+    else legend = false;
+    rebuild();
+    ui->customPlot->replot();
+    ui->customPlot->update();
+}
+
+void CreatePlot::on_lineEdit_bar_name_textChanged(const QString &arg1)
+{
+    name_bars[ui->comboBox_cur_bar->currentIndex()] = arg1;
+    rebuild();
+    ui->customPlot->replot();
+    ui->customPlot->update();
+}
+
+void CreatePlot::on_comboBox_cur_bar_currentIndexChanged(int index)
+{
+    if (col_bars.size() == 0) return;
+    if (col_bars[index] == QColor(255,0,0)) {
+        ui->comboBox_barcolor->setCurrentIndex(0);
+    }
+    if (col_bars[index] == QColor(0,255,0)) {
+        ui->comboBox_barcolor->setCurrentIndex(1);
+    }
+    if (col_bars[index] == QColor(0,0,255)) {
+        ui->comboBox_barcolor->setCurrentIndex(2);
+    }
+    ui->lineEdit_bar_name->setText(name_bars[index]);
+    rebuild();
+    ui->customPlot->replot();
+    ui->customPlot->update();
 }

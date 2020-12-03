@@ -29,14 +29,39 @@ private slots:
 
     void on_comboBox_barcolor_currentIndexChanged(const QString &arg1);
 
-    void on_pushButton_clicked();
+    void on_spinBox_num_bars_valueChanged(int arg1);
+
+    void rebuild();
+
+    void on_lineEdit_xAxis_textChanged(const QString &arg1);
+
+    void on_radioButton_main_y_clicked();
+
+    void on_radioButton_main_x_clicked();
+
+    void on_checkBox_above_stateChanged(int arg1);
+
+    void on_checkBox_legend_stateChanged(int arg1);
+
+    void on_lineEdit_bar_name_textChanged(const QString &arg1);
+
+    void on_comboBox_cur_bar_currentIndexChanged(int index);
 
 private:
     Ui::CreatePlot *ui;
     Plot plot;
     QLinearGradient gradient;
-    QCPBars *bar;
-    QCustomPlot *f;
+    QVector<QCPBars*> bars;
+    QCPBarsGroup *group;
+    QVector<double> ticks;
+    int num;
+    QVector<QColor> col_bars;
+    QVector<QString> name_bars;
+    QString x_name;
+    QString y_name;
+    bool main_x;
+    bool legend;
+    QColor background;
 };
 
 #endif // CREATEPLOT_H
