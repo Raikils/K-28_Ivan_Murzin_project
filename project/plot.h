@@ -19,6 +19,7 @@ private:
     QVector<QVector<double>> _data;
     QVector<double> _ticker;
     int _last;
+    QVector<QString> _ticks_name;
 public:
     Plot();
 
@@ -48,6 +49,11 @@ public:
     void setTicker(const QVector<double> &ticker);
     int last() const;
     void setLast(int last);
+    QVector<QString> ticks_name() const;
+    void setTicks_name(const QVector<QString> &ticks_name);
 };
+
+QDataStream &operator<<(QDataStream &out, const Plot &plot);
+QDataStream &operator>>(QDataStream &in, Plot &plot);
 
 #endif // PLOT_H

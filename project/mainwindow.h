@@ -34,6 +34,16 @@ private slots:
 
     void on_pushButton_Delete_clicked();
 
+    void on_lineEdit_tick_name_textChanged(const QString &arg1);
+
+    void on_pushButton_save_png_clicked();
+
+    void on_pushButton_save_jpg_clicked();
+
+    void on_pushButton_save_pdf_clicked();
+
+    void on_pushButton_delete_plot_clicked();
+
 private:
     Ui::MainWindow *ui;
     CreatePlot *crpl;
@@ -51,5 +61,7 @@ private:
     bool legend;
     QColor background;
     int cur;
+    QVector<double> width;
+    QVector<QString> labels;
 };
 #endif // MAINWINDOW_H

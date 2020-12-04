@@ -35,17 +35,13 @@ private slots:
 
     void on_lineEdit_xAxis_textChanged(const QString &arg1);
 
-    void on_radioButton_main_y_clicked();
-
-    void on_radioButton_main_x_clicked();
-
-    void on_checkBox_above_stateChanged(int arg1);
-
     void on_checkBox_legend_stateChanged(int arg1);
 
     void on_lineEdit_bar_name_textChanged(const QString &arg1);
 
     void on_comboBox_cur_bar_currentIndexChanged(int index);
+
+    void on_lineEdit_yAxis_textChanged(const QString &arg1);
 
 private:
     Ui::CreatePlot *ui;
@@ -62,6 +58,7 @@ private:
     bool main_x;
     bool legend;
     QColor background;
+    QVector<double> width;
 };
 
 #endif // CREATEPLOT_H

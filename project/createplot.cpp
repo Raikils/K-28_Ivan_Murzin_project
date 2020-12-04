@@ -12,9 +12,19 @@ CreatePlot::CreatePlot(QWidget *parent) :
     ui->comboBox_backcolor->addItem("red");
     ui->comboBox_backcolor->addItem("green");
     ui->comboBox_backcolor->addItem("blue");
+    ui->comboBox_backcolor->addItem("yellow");
+    ui->comboBox_backcolor->addItem("pink");
+    ui->comboBox_backcolor->addItem("aqua");
+    ui->comboBox_backcolor->addItem("black");
+
     ui->comboBox_barcolor->addItem("red");
     ui->comboBox_barcolor->addItem("green");
     ui->comboBox_barcolor->addItem("blue");
+    ui->comboBox_barcolor->addItem("yellow");
+    ui->comboBox_barcolor->addItem("pink");
+    ui->comboBox_barcolor->addItem("aqua");
+    ui->comboBox_barcolor->addItem("whiet");
+    ui->comboBox_barcolor->addItem("black");
     ui->comboBox_cur_bar->addItem("1");
     gradient.setColorAt(0, QColor(255, 255, 255));
     gradient.setColorAt(1, QColor(255, 255, 255));
@@ -22,27 +32,12 @@ CreatePlot::CreatePlot(QWidget *parent) :
     main_x = true;
     background = QColor(255, 255, 255);
 
-    QVector<QString> labels;
-    labels << "1" << "2" << "3";
-    QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
-    textTicker->addTicks(ticks, labels);
-    ui->customPlot->xAxis->setTicker(textTicker);
-    ui->customPlot->xAxis->setTickLabelRotation(60);
-    ui->customPlot->xAxis->setSubTicks(false);
-    ui->customPlot->xAxis->setTickLength(0, 4);
-    ui->customPlot->xAxis->setRange(0, 8);
-    ui->customPlot->xAxis->setBasePen(QPen(Qt::white));
-    ui->customPlot->xAxis->setTickPen(QPen(Qt::white));
-    ui->customPlot->xAxis->grid()->setVisible(true);
-    ui->customPlot->xAxis->grid()->setPen(QPen(QColor(130, 130, 130), 0, Qt::DotLine));
-    ui->customPlot->xAxis->setTickLabelColor(Qt::white);
-    ui->customPlot->xAxis->setLabelColor(Qt::white);
-
     col_bars.push_back(QColor(255, 0, 0));
     name_bars.push_back("");
     num = 1;
     legend = false;
     group = NULL;
+    width << 0.3 << 0.3 << 0.15 << 0.15 << 0.1 << 0.1 << 0.06 << 0.06;
     rebuild();
 }
 
@@ -93,6 +88,26 @@ void CreatePlot::on_comboBox_backcolor_currentIndexChanged(const QString &arg1)
         gradient.setColorAt(1, QColor(255, 255, 255));
         background = QColor(255, 255, 255);
     }
+    if (arg1 == "yellow") {
+        gradient.setColorAt(0, QColor(255, 255, 0));
+        gradient.setColorAt(1, QColor(255, 255, 0));
+        background = QColor(255, 255, 0);
+    }
+    if (arg1 == "pink") {
+        gradient.setColorAt(0, QColor(255, 0, 255));
+        gradient.setColorAt(1, QColor(255, 0, 255));
+        background = QColor(255, 0, 255);
+    }
+    if (arg1 == "aqua") {
+        gradient.setColorAt(0, QColor(0, 255, 255));
+        gradient.setColorAt(1, QColor(0, 255, 255));
+        background = QColor(0, 255, 255);
+    }
+    if (arg1 == "black") {
+        gradient.setColorAt(0, QColor(0, 0, 0));
+        gradient.setColorAt(1, QColor(0, 0, 0));
+        background = QColor(0, 0, 0);
+    }
     ui->customPlot->setBackground(QBrush(gradient));
     ui->customPlot->replot();
     ui->customPlot->update();
@@ -113,6 +128,26 @@ void CreatePlot::on_comboBox_barcolor_currentIndexChanged(const QString &arg1)
     if (arg1 == "blue") {
         bars[i]->setBrush(QColor(0, 0, 255));
         col_bars[i] = QColor(0, 0, 255);
+    }
+    if (arg1 == "whiet") {
+        bars[i]->setBrush(QColor(255, 255, 255));
+        col_bars[i] = QColor(255, 255, 255);
+    }
+    if (arg1 == "yellow") {
+        bars[i]->setBrush(QColor(255, 255, 0));
+        col_bars[i] = QColor(255, 255, 0);
+    }
+    if (arg1 == "pink") {
+        bars[i]->setBrush(QColor(255, 0, 255));
+        col_bars[i] = QColor(255, 0, 255);
+    }
+    if (arg1 == "aqua") {
+        bars[i]->setBrush(QColor(0, 255, 255));
+        col_bars[i] = QColor(0, 255, 255);
+    }
+    if (arg1 == "black") {
+        bars[i]->setBrush(QColor(0, 0, 0));
+        col_bars[i] = QColor(0, 0, 0);
     }
     ui->customPlot->replot();
     ui->customPlot->update();
@@ -153,6 +188,7 @@ void CreatePlot::on_spinBox_num_bars_valueChanged(int arg1)
             num++;
         }
     }
+    rebuild();
     ui->customPlot->replot();
     ui->customPlot->update();
 }
@@ -173,7 +209,7 @@ void CreatePlot::rebuild()
         bars[bars.size() - 1]->setStackingGap(1);
         bars[bars.size() - 1]->setName(name_bars[i]);
         bars[bars.size() - 1]->setBrush(col_bars[i]);
-        bars[bars.size() - 1]->setWidth(0.3);
+        bars[bars.size() - 1]->setWidth(width[num - 1]);
         bars[bars.size() - 1]->setData(ticks, data);
         bars[bars.size() - 1]->setBarsGroup(group);
     }
@@ -182,6 +218,12 @@ void CreatePlot::rebuild()
     ui->customPlot->yAxis->setRange(0, 10);
     ui->customPlot->xAxis->setLabel(ui->lineEdit_xAxis->text());
     ui->customPlot->yAxis->setLabel(ui->lineEdit_yAxis->text());
+    QVector<QString> labels;
+    labels << "1" << "2" << "3";
+    QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+    textTicker->addTicks(ticks, labels);
+    ui->customPlot->xAxis->setTicker(textTicker);
+
     ui->customPlot->legend->setVisible(legend);
     ui->customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignHCenter);
     ui->customPlot->legend->setBrush(QColor(255, 255, 255, 100));
@@ -197,27 +239,6 @@ void CreatePlot::on_lineEdit_xAxis_textChanged(const QString &arg1)
     ui->customPlot->xAxis->setLabel(arg1);
     ui->customPlot->replot();
     ui->customPlot->update();
-}
-
-void CreatePlot::on_radioButton_main_y_clicked()
-{
-    main_x = false;
-    rebuild();
-    ui->customPlot->replot();
-    ui->customPlot->update();
-}
-
-void CreatePlot::on_radioButton_main_x_clicked()
-{
-    main_x = true;
-    rebuild();
-    ui->customPlot->replot();
-    ui->customPlot->update();
-}
-
-void CreatePlot::on_checkBox_above_stateChanged(int arg1)
-{
-
 }
 
 void CreatePlot::on_checkBox_legend_stateChanged(int arg1)
@@ -249,8 +270,30 @@ void CreatePlot::on_comboBox_cur_bar_currentIndexChanged(int index)
     if (col_bars[index] == QColor(0,0,255)) {
         ui->comboBox_barcolor->setCurrentIndex(2);
     }
+    if (col_bars[index] == QColor(255,255,0)) {
+        ui->comboBox_barcolor->setCurrentIndex(3);
+    }
+    if (col_bars[index] == QColor(0,255,255)) {
+        ui->comboBox_barcolor->setCurrentIndex(4);
+    }
+    if (col_bars[index] == QColor(255,0,255)) {
+        ui->comboBox_barcolor->setCurrentIndex(5);
+    }
+    if (col_bars[index] == QColor(255,255,255)) {
+        ui->comboBox_barcolor->setCurrentIndex(6);
+    }
+    if (col_bars[index] == QColor(0, 0, 0)) {
+        ui->comboBox_barcolor->setCurrentIndex(7);
+    }
     ui->lineEdit_bar_name->setText(name_bars[index]);
     rebuild();
+    ui->customPlot->replot();
+    ui->customPlot->update();
+}
+
+void CreatePlot::on_lineEdit_yAxis_textChanged(const QString &arg1)
+{
+    ui->customPlot->yAxis->setLabel(arg1);
     ui->customPlot->replot();
     ui->customPlot->update();
 }

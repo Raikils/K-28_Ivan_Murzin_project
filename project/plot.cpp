@@ -130,6 +130,96 @@ void Plot::setLast(int last)
     _last = last;
 }
 
+QVector<QString> Plot::ticks_name() const
+{
+    return _ticks_name;
+}
+
+void Plot::setTicks_name(const QVector<QString> &ticks_name)
+{
+    _ticks_name = ticks_name;
+}
+
+QDataStream &operator<<(QDataStream &out, const Plot &plot)
+{
+    out << QString(plot.name()) << QColor(plot.background()) << int(plot.num()) << int(plot.last());
+    qDebug() << plot.last();
+    for (const auto &k : plot.color_bars()) {
+        out << QColor(k);
+    }
+    //out << plot.color_bars();
+    for (const auto &k : plot.name_bars()) {
+        out << QString(k);
+    }
+    out << QString(plot.xAxis()) << QString(plot.yAxis()) << bool(plot.main_x()) << bool(plot.legend());
+    for (const auto &k : plot.data()) {
+        for (const auto &j : k) {
+            out << double(j);
+        }
+    }
+    for (const auto &k : plot.ticker()) {
+        out << double(k);
+    }
+    for (const auto &k : plot.ticks_name()) {
+        out << QString(k);
+    }
+    return out;
+}
+
+QDataStream &operator>>(QDataStream &in, Plot &plot)
+{
+    QString name, xAxis, yAxis, y;
+    QColor back, z;
+    int num, last;
+    bool main, leg;
+    QVector<QColor> col;
+    QVector<double> tick, u;
+    QVector<QVector<double>> data;
+    QVector<QString> name_tick, name_bars;
+    double x;
+    in >> name >> back >> num >> last;
+    qDebug() << last;
+    for (int i = 0; i < num; i++) {
+        in >> z;
+        col.push_back(z);
+    }
+    for (int i = 0; i < num; i++) {
+        in >> y;
+        name_bars.push_back(y);
+    }
+    in >> xAxis >> yAxis >> main >> leg;
+    for (int i = 0; i < num; i++) {
+        u.clear();
+        for (int j = 0; j < last + 1; j++) {
+            in >>x;
+            u.push_back(x);
+        }
+        data.push_back(u);
+    }
+    for (int i = 0; i < last + 1; i++) {
+        in >> x;
+        tick.push_back(x);
+    }
+    for (int i = 0; i < last + 1; i++) {
+        in >> y;
+        name_tick.push_back(y);
+    }
+    plot.setName(name);
+    plot.setBackground(back);
+    plot.setNum(num);
+    plot.setLast(last);
+    plot.setColor_bars(col);
+    plot.setName_bars(name_bars);
+    plot.setXAxis(xAxis);
+    plot.setYAxis(yAxis);
+    plot.setMain_x(main);
+    plot.setLegend(leg);
+    plot.setData(data);
+    plot.setTicker(tick);
+    plot.setTicks_name(name_tick);
+    return in;
+}
+
 Plot::Plot()
 {
     
