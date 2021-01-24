@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <createplot.h>
 #include <plot.h>
+#include <color.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

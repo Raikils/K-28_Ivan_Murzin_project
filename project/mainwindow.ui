@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>ChartCreater</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -129,7 +129,7 @@
           <item>
            <widget class="QDoubleSpinBox" name="doubleSpinBox_cur_data">
             <property name="minimum">
-             <double>0.000000000000000</double>
+             <double>-100.000000000000000</double>
             </property>
             <property name="maximum">
              <double>100.000000000000000</double>

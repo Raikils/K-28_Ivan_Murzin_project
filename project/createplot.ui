@@ -37,7 +37,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
-          <widget class="QLineEdit" name="lineEdit_name"/>
+          <widget class="QLineEdit" name="lineEdit_name">
+           <property name="maxLength">
+            <number>20</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="checkBox_legend">
@@ -145,6 +149,9 @@
              <height>0</height>
             </size>
            </property>
+           <property name="maxLength">
+            <number>20</number>
+           </property>
           </widget>
          </item>
         </layout>
@@ -171,6 +178,9 @@
            <property name="text">
             <string>x</string>
            </property>
+           <property name="maxLength">
+            <number>20</number>
+           </property>
           </widget>
          </item>
         </layout>
@@ -196,6 +206,9 @@
           <widget class="QLineEdit" name="lineEdit_yAxis">
            <property name="text">
             <string>y</string>
+           </property>
+           <property name="maxLength">
+            <number>20</number>
            </property>
           </widget>
          </item>

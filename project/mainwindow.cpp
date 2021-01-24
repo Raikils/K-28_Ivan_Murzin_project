@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "qcustomplot.h"
 #include <QListWidgetItem>
+#include <QWinTaskbarButton>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -23,6 +24,11 @@ MainWindow::MainWindow(QWidget *parent)
          //         <<k.main_x() << k.legend() << k.data() << k.ticker() << k.ticks_name();
          plots.push_back(k);
     }
+    ui->customPlot->xAxis->setRange(0, 4);
+    ui->customPlot->yAxis->setRange(0, 4);
+    QWinTaskbarButton *button = new QWinTaskbarButton(this);
+    button->setWindow(this->windowHandle());
+    button->setOverlayIcon(QIcon(":/img/market-fluctuation.png"));
 }
 
 MainWindow::~MainWindow()
@@ -131,8 +137,8 @@ void MainWindow::rebuild(Plot p)
         bars[bars.size() - 1]->setBarsGroup(group);
     }
     ui->customPlot->setBackground(QBrush(gradient));
-    ui->customPlot->xAxis->setRange(0, 4);
-    ui->customPlot->yAxis->setRange(0, 10);
+    //ui->customPlot->xAxis->setRange(0, 4);
+    //ui->customPlot->yAxis->setRange(0, 10);
     ui->customPlot->xAxis->setLabel(x_name);
     ui->customPlot->yAxis->setLabel(y_name);
 
@@ -179,7 +185,7 @@ void MainWindow::on_doubleSpinBox_cur_data_valueChanged(double arg1)
         QVector<QString> labels = plots[cur].ticks_name();
         labels << QString::number(plots[cur].last() + 1);
         plots[cur].setTicks_name(labels);
-        qDebug() << plots[cur].data()[0].size();
+        //qDebug() << plots[cur].data()[0].size();
     }
     rebuild(plots[cur]);
     ui->customPlot->update();

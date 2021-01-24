@@ -1,5 +1,6 @@
 #include "createplot.h"
 #include "ui_createplot.h"
+#include <QColorDialog>
 
 CreatePlot::CreatePlot(QWidget *parent) :
     QDialog(parent),
@@ -16,6 +17,7 @@ CreatePlot::CreatePlot(QWidget *parent) :
     ui->comboBox_backcolor->addItem("pink");
     ui->comboBox_backcolor->addItem("aqua");
     ui->comboBox_backcolor->addItem("black");
+    ui->comboBox_backcolor->addItem("created");
 
     ui->comboBox_barcolor->addItem("red");
     ui->comboBox_barcolor->addItem("green");
@@ -25,6 +27,7 @@ CreatePlot::CreatePlot(QWidget *parent) :
     ui->comboBox_barcolor->addItem("aqua");
     ui->comboBox_barcolor->addItem("whiet");
     ui->comboBox_barcolor->addItem("black");
+    ui->comboBox_barcolor->addItem("created");
     ui->comboBox_cur_bar->addItem("1");
     gradient.setColorAt(0, QColor(255, 255, 255));
     gradient.setColorAt(1, QColor(255, 255, 255));
@@ -38,6 +41,8 @@ CreatePlot::CreatePlot(QWidget *parent) :
     legend = false;
     group = NULL;
     width << 0.3 << 0.3 << 0.15 << 0.15 << 0.1 << 0.1 << 0.06 << 0.06;
+    x_name = "x";
+    y_name = "y";
     rebuild();
 }
 
@@ -108,6 +113,12 @@ void CreatePlot::on_comboBox_backcolor_currentIndexChanged(const QString &arg1)
         gradient.setColorAt(1, QColor(0, 0, 0));
         background = QColor(0, 0, 0);
     }
+    if (arg1 == "created") {
+        QColor col = QColorDialog::getColor(Qt::white,this,"choose color");
+        gradient.setColorAt(0, col);
+        gradient.setColorAt(1, col);
+        background = col;
+    }
     ui->customPlot->setBackground(QBrush(gradient));
     ui->customPlot->replot();
     ui->customPlot->update();
@@ -148,6 +159,11 @@ void CreatePlot::on_comboBox_barcolor_currentIndexChanged(const QString &arg1)
     if (arg1 == "black") {
         bars[i]->setBrush(QColor(0, 0, 0));
         col_bars[i] = QColor(0, 0, 0);
+    }
+    if (arg1 == "created") {
+        QColor col = QColorDialog::getColor(Qt::white,this,"choose color");
+        bars[i]->setBrush(col);
+        col_bars[i] = col;
     }
     ui->customPlot->replot();
     ui->customPlot->update();
@@ -216,8 +232,10 @@ void CreatePlot::rebuild()
     ui->customPlot->setBackground(QBrush(gradient));
     ui->customPlot->xAxis->setRange(0, 4);
     ui->customPlot->yAxis->setRange(0, 10);
-    ui->customPlot->xAxis->setLabel(ui->lineEdit_xAxis->text());
-    ui->customPlot->yAxis->setLabel(ui->lineEdit_yAxis->text());
+    //ui->customPlot->xAxis->setLabel(ui->lineEdit_xAxis->text());
+    //ui->customPlot->yAxis->setLabel(ui->lineEdit_yAxis->text());
+    ui->customPlot->xAxis->setLabel(x_name);
+    ui->customPlot->yAxis->setLabel(y_name);
     QVector<QString> labels;
     labels << "1" << "2" << "3";
     QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
@@ -237,6 +255,7 @@ void CreatePlot::rebuild()
 void CreatePlot::on_lineEdit_xAxis_textChanged(const QString &arg1)
 {
     ui->customPlot->xAxis->setLabel(arg1);
+    x_name = arg1;
     ui->customPlot->replot();
     ui->customPlot->update();
 }
@@ -263,27 +282,29 @@ void CreatePlot::on_comboBox_cur_bar_currentIndexChanged(int index)
     if (col_bars.size() == 0) return;
     if (col_bars[index] == QColor(255,0,0)) {
         ui->comboBox_barcolor->setCurrentIndex(0);
-    }
+    } else
     if (col_bars[index] == QColor(0,255,0)) {
         ui->comboBox_barcolor->setCurrentIndex(1);
-    }
+    } else
     if (col_bars[index] == QColor(0,0,255)) {
         ui->comboBox_barcolor->setCurrentIndex(2);
-    }
+    } else
     if (col_bars[index] == QColor(255,255,0)) {
         ui->comboBox_barcolor->setCurrentIndex(3);
-    }
+    } else
     if (col_bars[index] == QColor(0,255,255)) {
         ui->comboBox_barcolor->setCurrentIndex(4);
-    }
+    } else
     if (col_bars[index] == QColor(255,0,255)) {
         ui->comboBox_barcolor->setCurrentIndex(5);
-    }
+    } else
     if (col_bars[index] == QColor(255,255,255)) {
         ui->comboBox_barcolor->setCurrentIndex(6);
-    }
+    } else
     if (col_bars[index] == QColor(0, 0, 0)) {
         ui->comboBox_barcolor->setCurrentIndex(7);
+    } else {
+        ui->comboBox_barcolor->setCurrentIndex(8);
     }
     ui->lineEdit_bar_name->setText(name_bars[index]);
     rebuild();
@@ -294,6 +315,7 @@ void CreatePlot::on_comboBox_cur_bar_currentIndexChanged(int index)
 void CreatePlot::on_lineEdit_yAxis_textChanged(const QString &arg1)
 {
     ui->customPlot->yAxis->setLabel(arg1);
+    y_name = arg1;
     ui->customPlot->replot();
     ui->customPlot->update();
 }
